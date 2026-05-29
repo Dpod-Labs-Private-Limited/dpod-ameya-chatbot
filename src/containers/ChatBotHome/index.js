@@ -225,11 +225,7 @@ export default function ChatBotHome(props) {
     }
   };
 
-  const handleResponseStream = async (
-    correlation_id,
-    session_id,
-    user_message,
-  ) => {
+  const handleResponseStream = async (correlation_id, session_id, user_message) => {
     let accumulatedChat = "";
 
     // reset stop state
@@ -238,20 +234,14 @@ export default function ChatBotHome(props) {
 
     const appendChunk = (existingText, newChunk) => {
       if (!newChunk) return existingText;
-
-      const trimmedExisting = existingText.trimEnd();
-      const trimmedChunk = newChunk.trim();
-
-      if (!trimmedChunk || trimmedExisting.endsWith(trimmedChunk)) {
-        return existingText;
+      if (
+        existingText &&
+        !existingText.endsWith('\n') &&
+        /^\s*(\*|\-|\d+\.)\s/.test(newChunk)
+      ) {
+        return existingText + '\n' + newChunk;
       }
-
-      const needsSpace =
-        trimmedExisting &&
-        !trimmedExisting.endsWith(" ") &&
-        ![".", "!", "?", ","].includes(trimmedExisting.slice(-1));
-
-      return trimmedExisting + (needsSpace ? " " : "") + trimmedChunk;
+      return existingText + newChunk;
     };
 
     try {
@@ -259,12 +249,13 @@ export default function ChatBotHome(props) {
         correlation_id,
         session_id,
         user_message,
-        streamAbortRef.current.signal,
+        streamAbortRef.current.signal
       );
 
       const decoder = new TextDecoder();
 
       while (true) {
+
         if (isStoppedRef.current || streamAbortRef.current.signal.aborted) {
           break;
         }
@@ -276,6 +267,7 @@ export default function ChatBotHome(props) {
         const events = chunk.split("\n").filter(Boolean);
 
         for (const event of events) {
+
           if (isStoppedRef.current) break;
           if (!event.startsWith("data: ")) continue;
 
@@ -288,11 +280,8 @@ export default function ChatBotHome(props) {
 
           if (isStoppedRef.current) break;
 
-          if (
-            data.response?.type === "chat" ||
-            data.response?.type === "image"
-          ) {
-            setAllMessages((prev) => {
+          if (data.response?.type === "chat" || data.response?.type === "image") {
+            setAllMessages(prev => {
               if (isStoppedRef.current) return prev;
 
               const updated = [...prev];
@@ -311,7 +300,7 @@ export default function ChatBotHome(props) {
               if (data.response.type === "chat") {
                 accumulatedChat = appendChunk(
                   accumulatedChat,
-                  data.response.data?.msg,
+                  data.response.data?.msg
                 );
 
                 updated[updated.length - 1] = {
@@ -340,19 +329,15 @@ export default function ChatBotHome(props) {
           }
 
           if (data.response?.data?.done) {
-            setAllMessages((prev) =>
-              prev.map((m) =>
+            setAllMessages(prev =>
+              prev.map(m =>
                 m.sender === "bot" && m.progress_status
                   ? { ...m, progress_status: false }
-                  : m,
-              ),
+                  : m
+              )
             );
 
-            if (
-              !isStoppedRef.current &&
-              "Notification" in window &&
-              Notification.permission === "granted"
-            ) {
+            if (!isStoppedRef.current && "Notification" in window && Notification.permission === "granted") {
               new Notification("💬 Chatbot Response Ready", {
                 body: "Your chatbot reply is complete.",
                 tag: "chatbot-response",
@@ -368,7 +353,6 @@ export default function ChatBotHome(props) {
         console.log("Stream stopped by user");
         return;
       }
-
       console.error("Stream Error:", error);
       pushBotError("Something went wrong. Please try again.");
     }
@@ -386,7 +370,7 @@ export default function ChatBotHome(props) {
     isStoppedRef.current = true;
 
     streamAbortRef.current?.abort();
-    AnalyticsChatsApi.queryChatStop(correlationId).catch(() => {});
+    AnalyticsChatsApi.queryChatStop(correlationId).catch(() => { });
 
     setChatLoading(false);
 
@@ -394,13 +378,13 @@ export default function ChatBotHome(props) {
       prev.map((msg) =>
         msg.sender === "bot" && msg.progress_status
           ? {
-              ...msg,
-              progress_status: false,
-              messages: [
-                ...(msg.messages || []),
-                { type: "chat", text: "[Response stopped by user]" },
-              ],
-            }
+            ...msg,
+            progress_status: false,
+            messages: [
+              ...(msg.messages || []),
+              { type: "chat", text: "[Response stopped by user]" },
+            ],
+          }
           : msg,
       ),
     );
@@ -592,7 +576,7 @@ export default function ChatBotHome(props) {
                                 !isStoppedRef.current && <ThinkingIndicator />}
 
                               {/* USER MESSAGE */}
-                              {item.sender === "user" &&
+                              {/* {item.sender === "user" &&
                                 !item.progress_status &&
                                 message.type === "chat" && (
                                   <Typography
@@ -602,10 +586,10 @@ export default function ChatBotHome(props) {
                                   >
                                     {message.text}
                                   </Typography>
-                                )}
+                                )} */}
 
                               {/* BOT MESSAGE */}
-                              {item.sender === "bot" &&
+                              {/* {item.sender === "bot" &&
                                 !item.progress_status &&
                                 message.type === "chat" && (
                                   <span
@@ -617,7 +601,22 @@ export default function ChatBotHome(props) {
                                       displayData={message.text}
                                     />
                                   </span>
-                                )}
+                                )} */}
+
+
+                              {/* USER MESSAGE */}
+                              {item.sender === "user" && !item.progress_status && message.type === "chat" && (
+                                <Typography sx={styles.textStyle(item.sender === "user")}>
+                                  {message.text}
+                                </Typography>
+                              )}
+
+                              {/* BOT MESSAGE */}
+                              {item.sender === "bot" && !item.progress_status && message.type === "chat" && (
+                                <span style={styles.textStyle(item.sender === "user")}>
+                                  <MarkdownRenderer displayData={message.text} />
+                                </span>
+                              )}
 
                               {item.sender === "bot" &&
                                 !item.progress_status &&
@@ -673,19 +672,19 @@ export default function ChatBotHome(props) {
 
                                     {props?.config?.APP_DETAILS
                                       ?.feedback_status && (
-                                      <Tooltip title="Link" arrow>
-                                        <span>
-                                          <Link
-                                            sx={{
-                                              fontSize: 18,
-                                              color: "#000000",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={handleClick}
-                                          />
-                                        </span>
-                                      </Tooltip>
-                                    )}
+                                        <Tooltip title="Link" arrow>
+                                          <span>
+                                            <Link
+                                              sx={{
+                                                fontSize: 18,
+                                                color: "#000000",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={handleClick}
+                                            />
+                                          </span>
+                                        </Tooltip>
+                                      )}
                                   </Box>
                                 )}
                             </Box>

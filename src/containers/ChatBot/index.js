@@ -5,8 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Authentication from '../Authentication';
-import ChatBotWindow from '../../components/AdvancedChatbot/ChatBotWindow';
-import ChatBotHome from '../../components/SimpleChatbot';
+import ChatBotHome from '../ChatBotHome';
 
 const ChatBot = (props) => {
     const { config, botType, loading } = useMemo(() => props, [JSON.stringify(props || {})]);
@@ -36,7 +35,6 @@ const ChatBot = (props) => {
                 :
                 (<>
                     {botType === "simple_bot" && <ChatBotHome config={config} />}
-                    {botType === "advanced_bot" && <ChatBotWindow config={config} />}
                 </>)
             }
         </Box>

@@ -91,3 +91,29 @@
   border-radius: 6px;
   overflow-x: auto;
 }
+
+/* Tables: allow horizontal scroll on narrow chat panels instead of squishing */
+.md-content table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  margin: 8px 0 !important;
+  font-size: 13px;
+}
+
+.md-content th,
+.md-content td {
+  border: 1px solid #d9d9d9;
+  padding: 6px 8px;
+  text-align: left;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.md-content th {
+  background: #f4f4f4;
+  font-weight: 600;
+}
