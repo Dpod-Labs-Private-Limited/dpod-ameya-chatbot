@@ -36,11 +36,11 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "dev": "webpack serve --env ENV_FILE=.env --config webpack.dev.js",
     "start": "webpack serve --env ENV_FILE=.env --config webpack.config.js --open",
     "build": "webpack --env ENV_FILE=.env --config webpack.config.js",
     "deploy": "npm run build && npm run upload && npm run invalidate",
-    "start-dev":  "webpack --env ENV_FILE=.env --config webpack.config.js --watch"
-
+    "start-dev": "webpack --env ENV_FILE=.env --config webpack.config.js --watch"
   },
   "eslintConfig": {
     "extends": [
