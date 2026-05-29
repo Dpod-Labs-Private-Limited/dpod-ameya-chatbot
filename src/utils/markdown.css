@@ -1,0 +1,93 @@
+/* Root wrapper */
+.md-root {
+  white-space: normal;
+}
+
+/* Main markdown block */
+.md-content {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  color: #000;
+  line-height: 1.6;
+  /* more line height = less congestion */
+}
+
+/* Reset all margins inside markdown */
+.md-content h1,
+.md-content h2,
+.md-content h3,
+.md-content p,
+.md-content ul,
+.md-content ol,
+.md-content li,
+.md-content pre {
+  margin: 0 !important;
+  padding: 0;
+}
+
+/* No top margin on first element */
+.md-content>*:first-child {
+  margin-top: 0 !important;
+}
+
+/* Headings: generous spacing */
+.md-content h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 18px 0 8px !important;
+}
+
+.md-content h2 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin: 16px 0 8px !important;
+}
+
+.md-content h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 12px 0 6px !important;
+}
+
+/* Paragraphs: comfortable vertical rhythm */
+.md-content p {
+  margin: 8px 0 !important;
+}
+
+/* Lists: more space above/below and between items */
+.md-content ul,
+.md-content ol {
+  margin: 8px 0 8px 1.5rem !important;
+  padding-left: 1.5rem;
+}
+
+.md-content li {
+  margin: 4px 0 !important;
+}
+
+/* Keep heading/paragraph + list visually connected */
+.md-content h1+ul,
+.md-content h2+ul,
+.md-content h3+ul,
+.md-content p+ul,
+.md-content h1+ol,
+.md-content h2+ol,
+.md-content h3+ol,
+.md-content p+ol {
+  margin-top: 4px !important;
+  /* small, not zero, so it breathes */
+}
+
+/* Optional: code styling */
+.md-content code {
+  background: #f4f4f4;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.md-content pre code {
+  display: block;
+  padding: 8px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
